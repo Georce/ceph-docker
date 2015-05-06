@@ -4,6 +4,23 @@ set -e
 : ${CLUSTER:=ceph}
 : ${WEIGHT:=1.0}
 
+# CONFIG_ROOT - etcd root for ceph-related keys
+: ${CONFIG_ROOT:=/ceph}
+
+# CLUSTER_PATH - etcd path where configuration should be stored
+: ${CLUSTER_PATH:=${CONFIG_ROOT}/${CLUSTER}/config}
+
+# ETCDCTL_PEERS - where to find etcd peers by Georce
+
+if [ -n "${ETCDCTL_PEERS}" ]; then
+  echo "Downloading the Configuration from Etcd"
+  echo "Configuration found for cluster ${CLUSTER}. Writing to disk."
+  
+  etcdctl -C ${ETCDCTL_PEERS} --no-sync get ${CLUSTER_PATH}/ceph.conf > /etc/ceph/ceph.conf
+  etcdctl -C ${ETCDCTL_PEERS} --no-sync get ${CLUSTER_PATH}/ceph.mon.keyring > /etc/ceph/ceph.mon.keyring
+  etcdctl -C ${ETCDCTL_PEERS} --no-sync get ${CLUSTER_PATH}/ceph.client.admin.keyring > /etc/ceph/ceph.client.admin.keyring
+fi
+
 for OSD_ID in $(ls /var/lib/ceph/osd |  awk 'BEGIN { FS = "-" } ; { print $2 }')
 do
    if [ -n "${JOURNAL_DIR}" ]; then
