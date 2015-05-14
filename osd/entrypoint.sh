@@ -16,6 +16,8 @@ if [ -n "${ETCDCTL_PEERS}" ]; then
   echo "Downloading the Configuration from Etcd"
   echo "Configuration found for cluster ${CLUSTER}. Writing to disk."
   
+  etcdctl -C ${ETCDCTL_PEERS} --no-sync set /skydns/local/$DOMAIN/"`hostname -s`" '{"host":"'`ip a | grep "scope global eth0" | grep -o '\([0-9]\{1,3\}\.\)\{3\}[0-9]\{1,3\}'`'"}'
+  
   etcdctl -C ${ETCDCTL_PEERS} --no-sync get ${CLUSTER_PATH}/ceph.conf > /etc/ceph/ceph.conf
   etcdctl -C ${ETCDCTL_PEERS} --no-sync get ${CLUSTER_PATH}/ceph.mon.keyring > /etc/ceph/ceph.mon.keyring
   etcdctl -C ${ETCDCTL_PEERS} --no-sync get ${CLUSTER_PATH}/ceph.client.admin.keyring > /etc/ceph/ceph.client.admin.keyring
