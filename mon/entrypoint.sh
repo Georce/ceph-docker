@@ -7,6 +7,17 @@ set -e
 # Usage:
 #   docker run -e MON_IP=192.168.101.50 -e MON_NAME=mymon ceph/mon
 
+if [ -n "${ETCDCTL_PEERS}" ]; then
+  echo "Downloading the Configuration from Etcd"
+  echo "Configuration found for cluster ${CLUSTER}. Writing to disk."
+  
+  etcdctl -C ${ETCDCTL_PEERS} --no-sync set /skydns/local/$DOMAIN/"`hostname -s`" '{"host":"'`ip a | grep "scope global eth0" | grep -o '\([0-9]\{1,3\}\.\)\{3\}[0-9]\{1,3\}'`'"}'
+  
+  etcdctl -C ${ETCDCTL_PEERS} --no-sync get ${CLUSTER_PATH}/ceph.conf > /etc/ceph/ceph.conf
+  etcdctl -C ${ETCDCTL_PEERS} --no-sync get ${CLUSTER_PATH}/ceph.mon.keyring > /etc/ceph/ceph.mon.keyring
+  etcdctl -C ${ETCDCTL_PEERS} --no-sync get ${CLUSTER_PATH}/ceph.client.admin.keyring > /etc/ceph/ceph.client.admin.keyring
+fi
+
 if [ ! -n "$MON_NAME" ]; then
    echo "ERROR- MON_NAME must be defined as the name of the monitor"
    exit 1
