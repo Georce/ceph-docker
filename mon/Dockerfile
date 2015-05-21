@@ -23,7 +23,7 @@
 #
 # VERSION 0.0.2
 
-FROM georce/base:hammer
+FROM georce/ceph-base:hammer
 MAINTAINER Seán C McCord "ulexus@gmail.com"
 
 # Add bootstrap script
