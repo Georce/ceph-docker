@@ -48,7 +48,7 @@ ENDHERE
    ceph-authtool /etc/ceph/ceph.mon.keyring --create-keyring --gen-key -n mon. --cap mon 'allow *'
 
    # Generate initial monitor map
-   monmaptool --create --add ${MON_NAME} ${MON_IP} --fsid ${fsid} /etc/ceph/monmap
+#   monmaptool --create --add ${MON_NAME} ${MON_IP} --fsid ${fsid} /etc/ceph/monmap
 fi
 
 # If we don't have a monitor keyring, this is a new monitor
@@ -64,10 +64,10 @@ if [ ! -e /var/lib/ceph/mon/ceph-${MON_NAME}/keyring ]; then
       exit 3
    fi
 
-   if [ ! -e /etc/ceph/monmap ]; then
-      echo "ERROR- /etc/ceph/monmap must exist.  You can extract it from your current monitor by running 'ceph mon getmap -o /tmp/monmap'"
-      exit 4
-   fi
+#   if [ ! -e /etc/ceph/monmap ]; then
+#      echo "ERROR- /etc/ceph/monmap must exist.  You can extract it from your current monitor by running 'ceph mon getmap -o /tmp/monmap'"
+#      exit 4
+#   fi
 
    # Import the client.admin keyring and the monitor keyring into a new, temporary one
    ceph-authtool /tmp/ceph.mon.keyring --create-keyring --import-keyring /etc/ceph/ceph.client.admin.keyring
